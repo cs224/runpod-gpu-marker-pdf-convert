@@ -1,0 +1,4 @@
+*.docx
+*.pptx
+out/
+.uv-cache/

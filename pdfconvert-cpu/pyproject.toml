@@ -1,0 +1,16 @@
+[project]
+name = "pdfconvert-cpu"
+version = "0.1.0"
+description = "Local CPU-oriented PDF conversion workspace."
+requires-python = ">=3.11,<3.13"
+dependencies = [
+    "docling",
+    "pymupdf4llm",
+]
+
+[dependency-groups]
+dev = []
+
+[tool.uv]
+package = false
+cache-dir = "./.uv-cache"

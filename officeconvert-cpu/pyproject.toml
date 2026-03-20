@@ -1,0 +1,17 @@
+[project]
+name = "officeconvert-cpu"
+version = "0.1.0"
+description = "Local CPU-oriented Office document conversion workspace."
+requires-python = ">=3.11,<3.13"
+dependencies = [
+    "markitdown[docx,pptx]",
+    "pypandoc-binary",
+    "pptx2md",
+]
+
+[dependency-groups]
+dev = []
+
+[tool.uv]
+package = false
+cache-dir = "./.uv-cache"

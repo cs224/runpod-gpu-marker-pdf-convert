@@ -1,0 +1,5 @@
+*.pdf
+.marker-input/
+out/
+.uv-cache/
+.runpod.mk
