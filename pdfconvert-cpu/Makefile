@@ -18,7 +18,7 @@ sync:
 
 pdftotext:
 	test -n "$(PDFS)" || { echo "No PDFs found in $(PROJECT_DIR)"; exit 1; }
-	command -v pdftotext >/dev/null || { echo "Missing: pdftotext (install poppler-utils)"; exit 1; }
+	command -v pdftotext >/dev/null || { echo "Warning: skipping pdftotext because it is not installed (install poppler-utils to enable it)"; exit 0; }
 	mkdir -p "$(OUTPUT_DIR)/pdftotext"
 	for pdf in $(PDFS); do
 	  base="$${pdf%.pdf}"
@@ -27,7 +27,7 @@ pdftotext:
 
 ebook:
 	test -n "$(PDFS)" || { echo "No PDFs found in $(PROJECT_DIR)"; exit 1; }
-	command -v ebook-convert >/dev/null || { echo "Missing: ebook-convert (install calibre)"; exit 1; }
+	command -v ebook-convert >/dev/null || { echo "Warning: skipping ebook because ebook-convert is not installed (install calibre to enable it)"; exit 0; }
 	mkdir -p "$(OUTPUT_DIR)/ebook"
 	for pdf in $(PDFS); do
 	  base="$${pdf%.pdf}"
@@ -44,6 +44,7 @@ pymupdf4llm:
 
 docling:
 	test -n "$(PDFS)" || { echo "No PDFs found in $(PROJECT_DIR)"; exit 1; }
+	$(UV) run python -c 'import cv2' >/dev/null 2>&1 || { echo "Warning: skipping docling because its runtime prerequisites are not available (for example libGL.so.1 for OpenCV; for Debian/Ubuntu install libgl1)"; exit 0; }
 	mkdir -p "$(OUTPUT_DIR)/docling"
 	for pdf in $(PDFS); do
 	  stem="$${pdf%.pdf}"

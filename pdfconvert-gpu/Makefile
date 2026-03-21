@@ -7,6 +7,8 @@ RUNPOD_CONFIG ?= .runpod.mk
 -include $(RUNPOD_CONFIG)
 
 UV ?= uv
+# Use an isolated uv-managed interpreter for stdlib-only helper scripts.
+STDLIB_UV_RUN ?= $(UV) run --no-project
 PROJECT_DIR := $(abspath $(CURDIR))
 PDFS := $(sort $(wildcard *.pdf))
 INPUT_DIR ?= .marker-input
@@ -36,7 +38,7 @@ sync:
 
 convert:
 	test -n "$(PDFS)" || { echo "No PDFs found in $(PROJECT_DIR)"; exit 1; }
-	eval "$$($(UV) run --no-sync python scripts/resolve_marker_settings.py --torch-device '$(TORCH_DEVICE)' --marker-workers '$(MARKER_WORKERS)')"
+	eval "$$($(STDLIB_UV_RUN) python scripts/resolve_marker_settings.py --torch-device '$(TORCH_DEVICE)' --marker-workers '$(MARKER_WORKERS)')"
 	printf 'Using marker settings: TORCH_DEVICE=%s MARKER_WORKERS=%s\n' "$$TORCH_DEVICE" "$$MARKER_WORKERS"
 	$(UV) run --no-sync python scripts/prewarm_marker_models.py
 	rm -rf "$(INPUT_DIR)"
@@ -47,7 +49,7 @@ convert:
 	TORCH_DEVICE="$$TORCH_DEVICE" $(UV) run marker "$(INPUT_DIR)" --output_dir "$(OUTPUT_DIR)" --workers "$$MARKER_WORKERS" $(MARKER_FLAGS)
 
 show-marker-config:
-	eval "$$($(UV) run --no-sync python scripts/resolve_marker_settings.py --torch-device '$(TORCH_DEVICE)' --marker-workers '$(MARKER_WORKERS)')"
+	eval "$$($(STDLIB_UV_RUN) python scripts/resolve_marker_settings.py --torch-device '$(TORCH_DEVICE)' --marker-workers '$(MARKER_WORKERS)')"
 	printf 'TORCH_DEVICE=%s\nMARKER_WORKERS=%s\n' "$$TORCH_DEVICE" "$$MARKER_WORKERS"
 
 require-ssh-config:
@@ -58,7 +60,7 @@ require-ssh-config:
 
 config-ssh:
 	test -n "$(SSH_CMD)" || { echo "Usage: make config-ssh SSH_CMD='ssh root@HOST -p PORT -i ~/.ssh/id_ed25519'"; exit 1; }
-	$(UV) run --no-sync python scripts/configure_ssh.py --ssh-cmd '$(SSH_CMD)' --output "$(RUNPOD_CONFIG)"
+	$(STDLIB_UV_RUN) python scripts/configure_ssh.py --ssh-cmd '$(SSH_CMD)' --output "$(RUNPOD_CONFIG)"
 
 show-ssh-config: require-ssh-config
 	sed -n '1,120p' "$(RUNPOD_CONFIG)"

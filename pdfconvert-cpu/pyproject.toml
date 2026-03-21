@@ -6,6 +6,8 @@ requires-python = ">=3.11,<3.13"
 dependencies = [
     "docling",
     "pymupdf4llm",
+    "torch==2.10.0",
+    "torchvision==0.25.0",
 ]
 
 [dependency-groups]
@@ -14,3 +16,12 @@ dev = []
 [tool.uv]
 package = false
 cache-dir = "./.uv-cache"
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cpu" }]
+torchvision = [{ index = "pytorch-cpu" }]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true

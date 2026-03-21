@@ -66,10 +66,11 @@ Key commands:
 
 ```bash
 cd pdfconvert-gpu
-uv sync
 make config-ssh SSH_CMD='ssh root@66.92.198.250 -p 11921 -i ~/.ssh/id_ed25519'
 make provision
 ```
+
+For a local workstation that only prepares SSH settings, provisions the remote pod, and later fetches outputs, a local `uv sync` is not required. The stdlib-only helper scripts behind `make config-ssh` and `make show-marker-config` use `uv run --no-project`, so they do not pull in the GPU project's heavy Python dependencies. The actual conversion path in `make all` / `make convert` still uses the full project environment on the machine where the conversion runs.
 
 `make config-ssh` parses the usual Runpod SSH command once and writes a local `.runpod.mk` file that later targets reuse.
 
@@ -154,6 +155,8 @@ System tools required by some targets:
 - `ebook-convert` from `calibre`
 
 The Python-based CPU methods are managed through that workspace's `pyproject.toml` and `uv`.
+
+`pdfconvert-cpu` declares `torch` and `torchvision` explicitly and pins them to the PyTorch CPU wheel index. That is intentional: letting `docling` pull PyTorch only as a transitive dependency can resolve to the large CUDA-enabled Linux wheels, which unnecessarily inflates the local `.venv`. Keeping `torch` and `torchvision` as direct dependencies forces the CPU-only builds instead and keeps the workspace smaller on non-GPU machines.
 
 ## Office workspace
 
